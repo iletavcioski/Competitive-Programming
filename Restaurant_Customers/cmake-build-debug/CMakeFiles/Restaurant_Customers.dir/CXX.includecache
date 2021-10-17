@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+C:/CP/Competitive-Programming/Restaurant_Customers/main.cpp
+iostream
+-
+vector
+-
+algorithm
+-
+deque
+-
+set
+-
+

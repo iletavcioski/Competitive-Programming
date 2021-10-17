@@ -1,0 +1,3 @@
+C:/CP/Competitive-Programming/Chessboard_and_Queens/cmake-build-debug/CMakeFiles/Chessboard_and_Queens.dir
+C:/CP/Competitive-Programming/Chessboard_and_Queens/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/CP/Competitive-Programming/Chessboard_and_Queens/cmake-build-debug/CMakeFiles/rebuild_cache.dir

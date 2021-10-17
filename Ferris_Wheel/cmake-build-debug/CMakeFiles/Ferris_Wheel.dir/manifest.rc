@@ -1,0 +1,2 @@
+#pragma code_page(65001)
+1 /* CREATEPROCESS_MANIFEST_RESOURCE_ID */ 24 /* RT_MANIFEST */ "C:/CP/Competitive-Programming/Ferris_Wheel/cmake-build-debug/CMakeFiles/Ferris_Wheel.dir/embed.manifest"
