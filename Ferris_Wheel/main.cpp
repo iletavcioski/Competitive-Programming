@@ -13,6 +13,7 @@ int main() {
     }
 
     std::sort(array.begin(), array.end());
+    std::reverse(array.begin(), array.end());
     long long weight = 0;
     int count = 1;
 
