@@ -1,14 +1,13 @@
-#include <iostream>
-#include <algorithm>
-#include <unordered_map>
+#include <bits/stdc++.h>
 
-int fw1[400001];
 
-int cnt = 0;
-int br, val = 1, x;
+int fw1[200001];
+
+int cnt = 1;
+int br, x;
 void up() {
     while (br < cnt) {
-        fw1[br] += val;
+        fw1[br]++;
         br += (br & -br);
     }
 }
@@ -23,91 +22,64 @@ int qu() {
 }
 
 
-bool compare(const std::array<int, 3> &a, const std::array<int, 3> &b) {
-    if (a[0] < b[0]) {
-        return true;
-    } else if (a[0] == b[0]) {
-        return a[1] > b[1];
-    } else {
-        return false;
-    }
+bool compare(const std::pair<std::pair<int, int> , int> &a,const  std::pair<std::pair<int, int> , int> &b) { 
+    if (a.first.first == b.first.first) {
+        return a.first.second > b.first.second;
+    } 
+    return a.first.first < b.first.first;
+    
 }
 
 
-int main() {
+signed main() {
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie();
+    std::cout.tie();
+    //freopen("input.txt", "r" , stdin);
+    //freopen("output.txt", "w", stdout);
     int n;
-    scanf("%d", &n);
-
-    int all[2 * n];
-
-    std::array<int, 3> entry[n];
-    std::array<int, 3> exit[n];
-
-    
+    std::cin >> n;
+    std::vector<int> all;
+    std::vector<std::pair<std::pair<int, int> , int> > entry(n);
+    std::set<int> set;
     for (int i = 0; i < n; i++) {
         int a, b;
-        scanf("%d %d", &a, &b);
-
-        entry[i] = {a, b, i};
-        exit[i] = {b, a, i};
-        all[2 * i] = a;
-        all[2 * i + 1] = b;
+        std::cin >> a >> b;
+        entry[i].second = i;
+        entry[i].first = {a, b};
+        set.insert(b);
     }
+    std::sort(entry.begin(), entry.end(), compare);
 
-    std::sort(all, all + (2 * n));
-    std::unordered_map<int, int> m;
-    cnt = 1;
-    int prevv = -1;
-    for (int i = 0; i < 2 * n; i++) {
-        if (i && all[i] == all[i - 1]) {
-            continue;
-        }
-        m[all[i]] = cnt;
-        cnt++;
+    std::map<int, int> m;
+
+    for (int i : set) {
+        m[i] = cnt++;
     }
-
 
     int vis1[n];
-    int vis2[n];
-
-    std::sort(entry, entry + n, compare);
-    for (int i = 0; i < n; i++) {
-        x = m[entry[i][1]] - 1;
-        br = m[entry[i][1]];
-        vis2[entry[i][2]] = i - qu();
+ 
+    for (int i = n - 1; i >= 0; i--) {
+        x = m[entry[i].first.second];
+        vis1[entry[i].second] = qu();
+        br = m[entry[i].first.second];
         up();
     }
-    std::fill(fw1, fw1 + cnt, 0);
-
-    std::sort(exit, exit + n, compare);
     for (int i = 0; i < n; i++) {
-        x = m[exit[i][1]] - 1;
-        vis1[exit[i][2]] = i - qu();
-        br = m[exit[i][1]];
+        std::cout << (vis1[i] > 0) << ' ';
+    }
+    std::cout << '\n';
+    memset(fw1, 0, sizeof(fw1));
+    memset(vis1, 0, sizeof(vis1));
+    for (int i = 0; i < n; i++) {
+        x = m[entry[i].first.second] - 1;
+        br = m[entry[i].first.second];
+        vis1[entry[i].second] = i - qu();
         up();
     }
-
-
     for (int i = 0; i < n; i++) {
-        if (vis1[i] > 0) {
-            printf("1 ");
-        } else {
-            printf("0 ");
-        }
-        //std::cout << (vis1[i] > 0)  << " ";
+        std::cout << (vis1[i] > 0) << ' ';
     }
-    printf("\n");
-    //std::cout << std::endl;
-
-    for (int i = 0; i < n; i++) {
-        if (vis2[i] > 0) {
-            printf("1 ");
-        } else {
-            printf("0 ");
-        }
-        //std::cout << (vis2[i] > 0) << " ";
-    }
-    printf("\n");
-    //std::cout << std::endl;
+    std::cout << '\n';
     return 0;
 }
