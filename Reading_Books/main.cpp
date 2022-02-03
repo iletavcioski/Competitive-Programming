@@ -34,9 +34,10 @@ int main() {
     long long res = std::max(a, b) * 2;
     if (a > b) {
         std::sort(books_a.begin(), books_a.end());
-        long long dif = b;
+        long long dif = a - b;
+        long long stasan = b;
         int pos = 0;
-        while (dif >= 0 && pos < books_a.size()) {
+        while (dif > 0 && pos < books_a.size() && ) {
             dif -= books_a[pos];
             if (dif < 0) {
                 break;
@@ -46,7 +47,7 @@ int main() {
         }
     } else if (a < b) {
         std::sort(books_b.begin(), books_b.end());
-        long long dif = a;
+        long long dif = b - a;
         int pos = 0;
         while (dif >= 0 && pos < books_b.size()) {
             dif -= books_b[pos];
