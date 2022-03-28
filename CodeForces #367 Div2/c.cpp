@@ -7,6 +7,7 @@ int main() {
     std::cout.tie();
     std::cin.tie();
 
+
     
     return 0;
 }
