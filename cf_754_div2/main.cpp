@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -6,61 +7,39 @@
 #include <queue>
 #include <stack>
 #include <algorithm>
-
+ 
 typedef long long ll;
-
-const ll mod = 998244353;
+ 
+ 
+ 
+using namespace std;
 int main() {
-    std::ios_base::sync_with_stdio(false);
-    std::cin.tie();
-    std::cout.tie();
-
+ 
+ 
     int t;
     std::cin >> t;
     
-
+ 
     while (t--) {
-        int n;
-        std::cin >> n;
-        std::vector<int> v;
-        for (int i = 0; i < n; i++) {
-            int num;
-            std::cin >> num;
-            v.push_back(num);
-        }
-
-        bool zgolemi2 = false;
-        int ones = 0;
-        for (int i = 0; i < n; i++) {
-            if (v[i] == 1) {
-                ones++;
-            }
-            if (i + 1 < n && v[i + 1] - v[i] >= 2) {
-                zgolemi2 = true;
-                break;
-            } else if (i + 1 == n && v[0] - v[i] >= 2) {
-                zgolemi2 = true;
-                break;
+        int result = 0;
+ 
+        for (int i = 1; i <= 30; i++) {
+            int a = (1 << i) - result;
+            int b = (1 << i);
+            cout << "? " << a << " " << b;
+            cout << endl;
+            int res;
+            cin >> res;
+            if (res != (1 << i)) {
+                if (res == (1 << (i - 1))) {
+                    result += (1 << (i - 1));
+                }
             }
         }
-        bool one = ones != 1;
-
-        bool maxna1 = false;
-        for (int i = 0; i < n; i++) {
-            if (i + 1 < n && v[i + 1] > n - v[i] + 1) {
-                maxna1 = true;
-                break;
-            } else if (i + 1 == n && v[0] > n - v[i] + 1) {
-                maxna1 = true;
-                break;
-            }
-        }
-
-        if (zgolemi2 || one) {
-            std::cout << "NO\n";
-        } else {
-            std::cout << "YES\n";
-        }
+        cout << "! " << result;
+        cout << endl;
+        
+        
     }
     return 0;
 }
