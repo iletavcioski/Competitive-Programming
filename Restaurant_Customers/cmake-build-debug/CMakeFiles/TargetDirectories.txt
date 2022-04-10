@@ -1,3 +1,0 @@
-C:/CP/Competitive-Programming/Restaurant_Customers/cmake-build-debug/CMakeFiles/Restaurant_Customers.dir
-C:/CP/Competitive-Programming/Restaurant_Customers/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/CP/Competitive-Programming/Restaurant_Customers/cmake-build-debug/CMakeFiles/rebuild_cache.dir

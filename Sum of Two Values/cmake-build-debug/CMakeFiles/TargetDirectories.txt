@@ -1,3 +1,0 @@
-C:/CP/Competitive-Programming/Sum of Two Values/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/CP/Competitive-Programming/Sum of Two Values/cmake-build-debug/CMakeFiles/Sum_of_Two_Values.dir
-C:/CP/Competitive-Programming/Sum of Two Values/cmake-build-debug/CMakeFiles/rebuild_cache.dir

@@ -1,3 +1,0 @@
-C:/CP/Competitive-Programming/Ferris_Wheel/cmake-build-debug/CMakeFiles/Ferris_Wheel.dir
-C:/CP/Competitive-Programming/Ferris_Wheel/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/CP/Competitive-Programming/Ferris_Wheel/cmake-build-debug/CMakeFiles/rebuild_cache.dir

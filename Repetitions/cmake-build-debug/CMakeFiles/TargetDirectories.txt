@@ -1,3 +1,0 @@
-C:/CP/Competitive-Programming/Repetitions/cmake-build-debug/CMakeFiles/Repetitions.dir
-C:/CP/Competitive-Programming/Repetitions/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/CP/Competitive-Programming/Repetitions/cmake-build-debug/CMakeFiles/rebuild_cache.dir

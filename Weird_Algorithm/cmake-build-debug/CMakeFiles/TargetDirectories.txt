@@ -1,3 +1,0 @@
-C:/CP/Competitive-Programming/Weird_Algorithm/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/CP/Competitive-Programming/Weird_Algorithm/cmake-build-debug/CMakeFiles/Weird_Algorithm.dir
-C:/CP/Competitive-Programming/Weird_Algorithm/cmake-build-debug/CMakeFiles/rebuild_cache.dir
