@@ -2,25 +2,26 @@
 #include <queue>
 #include <array>
 
-std::vector<std::vector<std::pair<int, int> > > graph;
+struct edge {
+    int a, b;
+    long long c;
+};
 
-std::vector<int> vis(2501, 0);
-std::vector<int> cyc(2501, 0);
+std::vector<bool> flag(2500, false);
+std::vector<bool> vis(2500, false);
+std::vector<std::vector<int> > rgraph;
+bool cycle = false;
 
-void dfs(int x, int first, int prev, long long val) {
-    //std::cout << x << std::endl;
-    if (vis[x] && x == first && val > 0) {
-        cyc[x] = true;
-        return;
-    } 
-    if (vis[x]) {
-        return;
+void dfs(int x) {
+    if (flag[x]) { 
+        cycle = true;
     }
-    vis[x] = true;
-    for (auto &p : graph[x]) {
-        
-        dfs(p.first, first, x, val + p.second);
-        
+
+    for (int next : rgraph[x]) {
+        if (!vis[next]) {
+            vis[next] = true;
+            dfs(next);
+        }
     }
 }
 int main() {
@@ -30,39 +31,58 @@ int main() {
 
     int n, m;
     std::cin >> n >> m;
-    std::vector<long long> dp(n + 1, -1e18);
 
-    
-    std::vector<std::pair<int, int> > vec;
-    graph.insert(graph.begin(), n + 1, vec);
-    std::array<long long, 3> edges[m];
+    std::vector<edge> edges;
+    std::vector<int> vec;
+    rgraph.insert(rgraph.begin(), n, vec);
+
     for (int i = 0; i < m; i++) {
         int a, b;
         long long c;
         std::cin >> a >> b >> c;
-        graph[a].push_back({b, c});
-        edges[i] = {a, b, c};
+        a--;
+        b--;
+        rgraph[b].push_back(a);
+        edges.push_back({a, b, c});
     }
 
-    dp[1] = 0;
-    for (int i = 1; i <= n; i++) {
-        for (int j = 1; j <= n; j++) {
-            vis[j] = 0;
+    std::vector<long long> distances(n, -1e18);
+    std::vector<long long> prev(n, -1e18);
+    distances[0] = 0;
+    prev[0] = 0;
+    
+    for (int i = 0; i < n - 1; i++) {
+        for (edge e : edges) {
+            if (distances[e.a] != -1e18) {
+                distances[e.b] = std::max(distances[e.b], distances[e.a] + e.c);
+                prev[e.b] = distances[e.b];
+            }
+
         }
-        dfs(i, i, 0, 0);
+    }
+    
+    for (int i = 0; i < n; i++) {
+        for (edge e : edges) {
+            if (distances[e.a] != -1e18) {
+                distances[e.b] = std::max(distances[e.b], distances[e.a] + e.c);
+            }
+        }
     }
 
-    for (int i = 1; i <= n - 1; i++) {
-        for (int j = 0; j < m; j++) {
-            dp[edges[j][1]] = std::max(dp[edges[j][1]], dp[edges[j][0]] + edges[j][2]);
+    
+    for (int i = 0; i < n; i++) {
+        if (distances[i] > prev[i]) {
+            flag[i] = true;
         }
     }
-
-    for (int i = 1; i <= n; i++) {
-        if (dp[1][i] != -1e18 && dp[i][n] != -1e18 && cyc[i]) {
-            cycle = true;
-        }
+    vis[n - 1] = true;
+    dfs(n - 1);
+    
+    if (cycle) {
+        std::cout << -1 << "\n";
+        return 0;
     }
+    std::cout << distances[n - 1] << "\n";
     
     return 0;
 }
