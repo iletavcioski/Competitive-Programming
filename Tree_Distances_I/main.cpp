@@ -61,8 +61,8 @@ int main() {
     long long max = 0;
 
     for (int i = 1; i <= n; i++) {
-        max = std::max(max, std::max(dp1[i].first + dp2[i].first, dp1[i].first + dp[i]));
+        std::cout << std::max(dp[i], dp1[i].first) << " ";
     }
-    std::cout << max << std::endl;
+    std::cout << std::endl;
     return 0;
 }
