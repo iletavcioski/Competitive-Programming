@@ -10,12 +10,11 @@ int main() {
     std::vector<long long> dp(1000001, 0);
     std::vector<long long> dp1(1000001, 0);
     dp1[1] = 1;
-    long long count = 1;
+
     for (int i = 2; i <= 1000000; i++) {
-        dp1[i] += count + 1;
+        dp1[i] = dp1[i - 1];
+        dp1[i] *= 2;
         dp1[i] %= mod;
-        count += dp1[i];
-        count %= mod;
     }
 
     for (int i = 1; i <= 1000000; i++) {
@@ -23,28 +22,27 @@ int main() {
         dp1[i] %= mod;
     }
 
-    count = dp1[1];
+    long long count;
     dp[1] = dp1[1] + 1;
+    count = dp[1];
+
+    for (int i = 2; i <= 1000000; i++) {
+        dp1[i] += dp1[i - 1];
+        dp1[i] %= mod;
+    }
 
     for (int i = 2; i <= 1000000; i++) {
         
-        dp[i] += 2 * count + dp1[i];
+        dp[i] += count + dp1[i] + 1;
         dp[i] %= mod;
-        count += dp1[i];
+        count += dp[i];
         count %= mod;
     }
 
-    long long cnt1 = 1;
-
-    for (int i = 1; i <= 1000000; i++) {
-        dp[i] += cnt1;
-        cnt1 *= 2;
-        dp[i] %= mod;
-        cnt1 %= mod;
-    }
-
-    //std::cout << dp[2] << std::endl;
     
+    std::cout << dp[6] << std::endl;
+    
+    /*
     int t;
     std::cin >> t;
 
@@ -53,5 +51,6 @@ int main() {
         std::cin >> num;
         std::cout << dp[num] << std::endl;
     }
+    */
     
 }
