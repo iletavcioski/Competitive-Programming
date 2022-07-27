@@ -40,7 +40,7 @@ int main() {
     }
 
     
-    std::cout << dp[6] << std::endl;
+    std::cout << dp[6] << std::endl; 
     
     /*
     int t;
