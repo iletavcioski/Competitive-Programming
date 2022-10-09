@@ -7,50 +7,24 @@ int main() {
     std::cin.tie();
     std::cout.tie();
 
-    std::vector<long long> dp(1000001, 0);
-    std::vector<long long> dp1(1000001, 0);
-    dp1[1] = 1;
+    static long long dp[1000001][2];
+
+    dp[1][0] = 1;
+    dp[1][1] = 1;
 
     for (int i = 2; i <= 1000000; i++) {
-        dp1[i] = dp1[i - 1];
-        dp1[i] *= 2;
-        dp1[i] %= mod;
+        dp[i][0] = (dp[i - 1][1] + (2 * dp[i - 1][0]) % mod) % mod;
+        dp[i][1] = ((4LL * dp[i - 1][1]) % mod + dp[i - 1][0]) % mod;
     }
 
-    for (int i = 1; i <= 1000000; i++) {
-        dp1[i] *= dp1[i];
-        dp1[i] %= mod;
-    }
-
-    long long count;
-    dp[1] = dp1[1] + 1;
-    count = dp[1];
-
-    for (int i = 2; i <= 1000000; i++) {
-        dp1[i] += dp1[i - 1];
-        dp1[i] %= mod;
-    }
-
-    for (int i = 2; i <= 1000000; i++) {
-        
-        dp[i] += count + dp1[i] + 1;
-        dp[i] %= mod;
-        count += dp[i];
-        count %= mod;
-    }
-
-    
-    std::cout << dp[6] << std::endl; 
-    
-    /*
     int t;
     std::cin >> t;
 
     while (t--) {
         int num;
         std::cin >> num;
-        std::cout << dp[num] << std::endl;
+        std::cout << (dp[num][0] + dp[num][1]) % mod << std::endl;
     }
-    */
-    
+
+    return 0;
 }
