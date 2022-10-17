@@ -15,9 +15,9 @@ long long dp(std::string num_one, std::string num_two) {
         }
     }
 
-    int first = 0;
+    int first = 0;     
     int second = 1;
-
+    // sdfdsfsdfds
     for (int i = 0; i < num_one.size() - 1; i++) {
         if (i == 0) {
             for (int j = num_one[i] - '0'; j <= num_two[i] - '0'; j++) {
