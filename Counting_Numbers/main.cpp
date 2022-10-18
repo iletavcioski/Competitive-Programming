@@ -1,105 +1,57 @@
 #include <iostream>
 #include <string>
 
-long long dp(std::string num_one, std::string num_two) {
-    if (num_one.size() == 1) {
-        return num_two[0] - num_one[0] + 1;
-    }
+long long dp(std::string num_one, std::string num_two, bool limit_upper) {
+    long long res = 0;
 
-    long long dp[10][10][2];
-    for (int i = 0; i < 10; i++) {
-        for (int k = 0; k < 10; k++) {
-            for (int j = 0; j < 2; j++) {
-                dp[i][k][j] = 0;
+    for (int i = 0; i < num_one.size(); i++) {
+        if (i > 1) {
+            if (limit_upper == false && num_two[i - 1] == num_two[i - 2]) {
+                break;
+            } else if (limit_upper && num_one[i - 1] == num_one[i - 2]) {
+                break;
             }
         }
-    }
-
-    int first = 0;     
-    int second = 1;
-    // sdfdsfsdfds
-    for (int i = 0; i < num_one.size() - 1; i++) {
-        if (i == 0) {
-            for (int j = num_one[i] - '0'; j <= num_two[i] - '0'; j++) {
-                if (j == num_one[i] - '0' && j == num_two[i] - '0') {
-                    for (int k = num_one[i + 1] - '0'; k <= num_two[i + 1] - '0'; k++) {
-                        if (k == j) {
-                            continue;
-                        }
-                        dp[j][k][first] = 1;
-                    }
-                } else if (j == num_one[i] - '0') {
-                    for (int k = num_one[i + 1] - '0'; k <= 9; k++) {
-                        if (k == j) {
-                            continue;
-                        }
-                        dp[j][k][first] = 1;
-                    }
-                } else if (j == num_two[i] - '0') {
-                    for (int k = 0; k <= num_two[i + 1] - '0'; k++) {
-                        if (k == j) {
-                            continue;
-                        }
-                        dp[j][k][first] = 1;
+        long long multiply = 1;
+        for (int j = i + 1; j < num_one.size(); j++) {
+            multiply *= 9;
+        }
+        long long multiplier = num_two[i] - num_one[i];
+        if (i == 0 && num_one.size() == 1) {
+            multiplier++;
+        }
+        if (i > 0) {
+            if (limit_upper == false) {
+                if (i < num_one.size() - 1) {
+                    multiplier = num_two[i] - num_one[i];
+                    if (num_two[i - 1] >= num_one[i] && num_two[i - 1] < num_two[i]) {
+                        multiplier--;
                     }
                 } else {
-                    for (int k = 0; k <= 9; k++) {
-                        if (k == j) {
-                            continue;
-                        }
-                        dp[j][k][first] = 1;
+                    multiplier = num_two[i] - num_one[i] + 1;
+                    if (num_two[i - 1] >= num_one[i] && num_two[i - 1] <= num_two[i]) {
+                        multiplier--;
                     }
                 }
-            }
-        } else {
-            for (int ii = 0; ii <= 9; ii++) {
-                for (int jj = 0; jj <= 9; jj++) {
-                    dp[ii][jj][second] = 0;
-                }
-            }
-            for (int l = 0; l <= 9; l++) {
-                for (int j = num_one[i] - '0'; j <= num_two[i] - '0'; j++) {
-                    if (j == num_one[i] - '0' && j == num_two[i] - '0') {
-                        for (int k = num_one[i + 1] - '0'; k <= num_two[i + 1] - '0'; k++) {
-                            if (k == j) {
-                                continue;
-                            }
-                            dp[j][k][second] += dp[l][j][first];
-                        }
-                    } else if (j == num_one[i] - '0') {
-                        for (int k = num_one[i + 1] - '0'; k <= 9; k++) {
-                            if (k == j) {
-                                continue;
-                            }
-                            dp[j][k][second] += dp[l][j][first];
-                        }
-                    } else if (j == num_two[i] - '0') {
-                        for (int k = 0; k <= num_two[i + 1] - '0'; k++) {
-                            if (k == j) {
-                                continue;
-                            }
-                            dp[j][k][second] += dp[l][j][first];
-                        }
-                    } else {
-                        for (int k = 0; k <= 9; k++) {
-                            if (k == j) {
-                                continue;
-                            }
-                            dp[j][k][second] += dp[l][j][first];
-                        }
+            } else {
+                if (i < num_one.size() - 1) {
+                    multiplier = num_two[i] - num_one[i];
+                    if (num_one[i - 1] > num_one[i] && num_one[i - 1] <= num_two[i]) {
+                        multiplier--;
+                    }
+                } else {
+                    multiplier = num_two[i] - num_one[i] + 1;
+                    if (num_one[i - 1] >= num_one[i] && num_one[i - 1] <= num_two[i]) {
+                        multiplier--;
                     }
                 }
+
             }
-            int t = first;
-            first = second;
-            second = t;
         }
-    }
-    long long res = 0;
-    for (int i = 0; i <= 9; i++) {
-        for (int j = 0; j <= 9; j++) {
-            res += dp[i][j][first];
-        }
+
+
+        multiply *= multiplier;
+        res += multiply;
     }
     return res;
 }
@@ -116,7 +68,7 @@ int main() {
 
     long long result = 0;
 
-    
+
     for (int i = first_number.size() + 1; i < second_number.size(); i++) {
         long long multiply = 9;
         long long current = 1;
@@ -137,14 +89,14 @@ int main() {
         for (int i = 0; i < second_number.size() - 1; i++) {
             second_number_boundary_low += '0';
         }
-        result += dp(first_number, first_number_boundary_high);
-        result += dp(second_number_boundary_low, second_number);
+        result += dp(first_number, first_number_boundary_high, true);
+        result += dp(second_number_boundary_low, second_number, false);
     }
 
-    
+
     if (first_number.size() == second_number.size()) {
         int digit = 0;
-        
+
         while (first_number[digit] == second_number[digit] && digit < first_number.size()) {
             first_number_boundary_high += first_number[digit];
             second_number_boundary_low += second_number[digit];
@@ -157,7 +109,7 @@ int main() {
         }
 
         if (first_number_boundary_high.size() == first_number.size()) {
-            result += dp(first_number, second_number);
+            result += dp(first_number, second_number, false);
         } else {
             while (first_number_boundary_high.size() < first_number.size()) {
                 first_number_boundary_high += '9';
@@ -167,8 +119,8 @@ int main() {
                 second_number_boundary_low += '0';
             }
 
-            result += dp(first_number, first_number_boundary_high);
-            result += dp(second_number_boundary_low, second_number);
+            result += dp(first_number, first_number_boundary_high, true);
+            result += dp(second_number_boundary_low, second_number, false);
             long long multiply = 9;
             long long current = 1;
             for (int j = 0; j < second_number.size() - 1; j++) {
