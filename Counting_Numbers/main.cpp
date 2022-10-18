@@ -97,16 +97,24 @@ int main() {
     if (first_number.size() == second_number.size()) {
         int digit = 0;
 
+        bool cons = false;
         while (first_number[digit] == second_number[digit] && digit < first_number.size()) {
             first_number_boundary_high += first_number[digit];
             second_number_boundary_low += second_number[digit];
             digit++;
+            if (digit >= 1) {
+                if (first_number[digit] == first_number[digit - 1]) {
+                    cons = true;
+                }
+            }
         }
+
 
         if (digit < first_number.size()) {
             first_number_boundary_high += first_number[digit];
             second_number_boundary_low += second_number[digit];
         }
+
 
         if (first_number_boundary_high.size() == first_number.size()) {
             result += dp(first_number, second_number, false);
@@ -123,11 +131,14 @@ int main() {
             result += dp(second_number_boundary_low, second_number, false);
             long long multiply = 9;
             long long current = 1;
-            for (int j = 0; j < second_number.size() - 1; j++) {
+            for (int j = digit + 1; j < second_number.size(); j++) {
                 current *= multiply;
             }
-            for (int i = first_number[0] - '0' + 1; i < second_number[0] - '0'; i++) {
+            for (int i = first_number[digit] - '0' + 1; i < second_number[digit] - '0'; i++) {
                 result += current;
+            }
+            if (cons == true) {
+                result *= 0;
             }
         }
     }
