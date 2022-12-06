@@ -1,3 +1,0 @@
-C:/Users/ilija/Documents/Competitive-Programming/proba/cmake-build-debug/CMakeFiles/proba.dir
-C:/Users/ilija/Documents/Competitive-Programming/proba/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/ilija/Documents/Competitive-Programming/proba/cmake-build-debug/CMakeFiles/rebuild_cache.dir
