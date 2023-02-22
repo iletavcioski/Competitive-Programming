@@ -1,6 +1,6 @@
 # Competitive Programming
 
-![](https://img.shields.io/badge/solutions-133-green) 
+![](https://img.shields.io/badge/solutions-135-green) 
 
 ## Introduction
 This is a repository of all problems that I am solving during my competitive programming career. The solutions are of problems from the following websites:
