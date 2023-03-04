@@ -10,33 +10,18 @@ std::set<int> lower, upper;
 
 void add(int x) {
     if (x > middle) {
-        lower.insert(middle);
         upper.insert(x);
-        middle = *upper.begin();
-        upper.erase(middle);
     } else {
-        upper.insert(middle);
         lower.insert(x);
-        middle = *lower.rbegin();
-        lower.erase(middle);
     }
 }
 
 void del(int x) {
     if (x < middle) {
         lower.erase(x);
-        lower.insert(middle);
-        middle = *upper.begin();
-        upper.erase(middle);
-    } else if (x > middle){
+    } else if (x >= middle){
         upper.erase(x);
-        upper.insert(middle);
-        middle = *lower.rbegin();
-        lower.erase(middle);
-    } else {
-        middle = *upper.begin();
-        upper.erase(middle);
-    }
+    } 
 }
 
 int main() {
@@ -81,10 +66,12 @@ int main() {
     for (int i = (int)v.size() / 2 + 1; i < v.size(); i++) {
         upper.insert(v[i]);
     }
+    upper.insert(middle);
     int min = middle;
     int i = 0, j = 0;
     int dir = 1;
     while (i + k + 1 <= n) {
+       
         if (dir == 1) {
             if (j + k + 1 <= n) {
                 j++;
@@ -128,18 +115,16 @@ int main() {
         }
 
         
-        while (upper.size() > lower.size()) {
-            lower.insert(middle);
-            middle = *upper.begin();
-            upper.erase(middle);
+        while (upper.size() - 1 > lower.size()) {
+            lower.insert(*upper.begin());
+            upper.erase(*upper.begin());
         }
 
-        while (lower.size() > upper.size()) {
-            upper.insert(middle);
-            middle = *lower.rbegin();
-            lower.erase(middle);
+        while (lower.size() > upper.size() - 1) {
+            upper.insert(*lower.rbegin());
+            lower.erase(*lower.rbegin());
         }
-        
+        middle = *upper.begin();
         min = std::min(middle, min);
     }
     std::cout << min << std::endl;
