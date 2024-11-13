@@ -1,34 +1,25 @@
 #include <iostream>
 #include <vector>
-#include <climits>  
+#include <climits>
 
 const int MIN = INT_MIN;
 const int N = 200000;
 
 int segment_tree[4 * N];
-int index[N];
+int _index[N];
 int max_subtree[N];
 int lca[N][19];
 int euler_values[N];
 int heavy_parent[N];
 int end_index[N];
 int depth[N];
+int values[N];
 
-void build_segment_tree(int l, int r, int p, int buffer) {
-    if (l == r) {
-        segment_tree[buffer + p] = euler_values[l];
-        return;
-    }
-
-    build_segment_tree(l, (l + r) / 2, 2 * p, buffer);
-    build_segment_tree((l + r)  / 2 + 1, r, 2 * p + 1, buffer);
-
-    segment_tree[buffer + p] = std::max(segment_tree[buffer + 2 * p], segment_tree[buffer + 2 * p + 1]);
-}
 
 void update_segment_tree(int l, int r, int p, int pos, int value, int buffer) {
     if (l == r && l == pos) {
         segment_tree[buffer + p] = value;
+        return;
     }
 
     if (l > pos || r < pos) {
@@ -92,10 +83,15 @@ int dfs_subtree(std::vector<std::vector<int> > &tree, int current_node, int prev
 int total_nodes;
 
 void dfs_hld(std::vector<std::vector<int> > &tree, int current_node, int previous_node, int heavy_node, bool heavy_path) {
-    index[current_node] = total_nodes++;
+    euler_values[total_nodes] = values[current_node];
+    _index[current_node] = total_nodes++;
+    heavy_parent[current_node] = heavy_node;
 
-    if (max_subtree[current_node] == -1) {
-        end_index[heavy_node] = total_nodes;
+    if (max_subtree[current_node] == -1 || max_subtree[current_node] == previous_node) {
+        end_index[heavy_node] = total_nodes - 1;
+        if (heavy_node == -1) {
+            end_index[current_node] = total_nodes - 1;
+        }
         return;
     }
     if (heavy_path) {
@@ -106,7 +102,7 @@ void dfs_hld(std::vector<std::vector<int> > &tree, int current_node, int previou
 
     for (int next_node : tree[current_node]) {
         if (next_node != max_subtree[current_node] && next_node != previous_node) {
-            dfs_hld(tree, next_node, current_node, next_node, false);
+            dfs_hld(tree, next_node, current_node, -1, false);
         }
     }
 }
@@ -114,10 +110,15 @@ void dfs_hld(std::vector<std::vector<int> > &tree, int current_node, int previou
 
 
 void update_hld(int node, int value) {
-    int node_index = index[node];
+    int node_index = _index[node];
     int heavy_node = heavy_parent[node];
-    int start_index = index[heavy_node];
-    int end_index_ = end_index[heavy_node];
+    int start_index = _index[heavy_node];
+    int end_index_ = _index[node];
+    if (heavy_node != -1) {
+        end_index_ = end_index[heavy_node];
+    }
+
+    std::cout << node << " " << value << " " << heavy_node << " " << start_index << " " << end_index_ << std::endl;
 
     update_segment_tree(start_index, end_index_, 1, node_index, value, 3 * start_index);
 }
@@ -128,8 +129,54 @@ void build_hld(int n) {
     }
 }
 
-int query_hld(int a, int b) {
 
+int find_lca(int a, int b) {
+    for (int i = 18; i >= 0; i--) {
+        if (depth[a] + (1 << i) <= depth[b]) {
+            a = lca[a][i];
+        }
+    }
+
+    for (int i = 18; i >= 0; i--) {
+        if (depth[b] + (1 << i) <= depth[a]) {
+            b = lca[b][i];
+        }
+    }
+
+    for (int i = 18; i >= 0; i--) {
+        if (lca[a][i] != lca[b][i]) {
+            a = lca[a][i];
+            b = lca[b][i];
+        }
+    }
+    return lca[a][0];
+}
+
+int query_path_hld(int node, int ancestor) {
+    int result = 0;
+    while (depth[node] > depth[ancestor]) {
+        if (heavy_parent[node] == -1) {
+            int start_index = _index[node];
+            result = std::max(segment_tree[3 * start_index + 1], result);
+            node = lca[node][0];
+        } else if (depth[heavy_parent[node]] <= depth[ancestor]) {
+            int start_index = _index[heavy_parent[node]];
+            result = std::max(segment_tree[3 * start_index + 1], result);
+            node = heavy_parent[node];
+        } else {
+            int start_index = _index[heavy_parent[node]];
+            int end_index_ = end_index[heavy_parent[node]];
+            int node_index = _index[node];
+            result = std::max(query(start_index, end_index_, 1, node_index, end_index_, 3 * start_index), result);
+            node = heavy_parent[node];
+        }
+    }
+    return result;
+}
+
+int query_hld(int a, int b) {
+    int ancestor = find_lca(a, b);
+    return std::max(query_path_hld(a, ancestor), query_path_hld(b, ancestor));
 }
 
 int main() {
@@ -141,6 +188,52 @@ int main() {
     int n, q;
     std::cin >> n >> q;
 
+    for (int i = 0; i < n; i++) {
+        std::cin >> values[i];
+    }
+
+    std::vector<std::vector<int> > tree;
+    std::vector<int> vec;
+    tree.insert(tree.begin(), n, vec);
+
+    for (int i = 0; i < n - 1; i++) {
+        int a, b;
+        std::cin >> a >> b;
+        a--;
+        b--;
+        tree[a].push_back(b);
+        tree[b].push_back(a);
+    }
+
+    dfs_lca(tree, 0, -1, 0);
+    calculate_lca(n);
+    dfs_subtree(tree, 0, -1);
+    dfs_hld(tree, 0, -1, -1, false);
+
+    std::cout << std::endl;
+    build_hld(n);
+
+    for (int i = 0; i < 4 * n; i++) {
+        //std::cout << i << ": " << segment_tree[i] << std::endl;
+    }
+    for (int i = 0; i < q; i++) {
+        int type;
+        std::cin >> type;
+
+        if (type == 1) {
+            int node, value;
+            std::cin >> node >> value;
+            node--;
+            update_hld(node, value);
+        } else {
+            int a, b;
+            std::cin >> a >> b;
+            a--;
+            b--;
+            std::cout << query_hld(a, b) << " ";
+        }
+    }
+    std::cout << "\n";
 
     return 0;
 
