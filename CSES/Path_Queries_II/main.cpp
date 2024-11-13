@@ -88,6 +88,7 @@ void dfs_hld(std::vector<std::vector<int> > &tree, int current_node, int previou
     heavy_parent[current_node] = heavy_node;
 
     if (max_subtree[current_node] == -1 || max_subtree[current_node] == previous_node) {
+
         end_index[heavy_node] = total_nodes - 1;
         if (heavy_node == -1) {
             end_index[current_node] = total_nodes - 1;
@@ -112,33 +113,37 @@ void dfs_hld(std::vector<std::vector<int> > &tree, int current_node, int previou
 void update_hld(int node, int value) {
     int node_index = _index[node];
     int heavy_node = heavy_parent[node];
-    int start_index = _index[heavy_node];
-    int end_index_ = _index[node];
+    int start_index = _index[node];
+    int end_index_ = end_index[node];
     if (heavy_node != -1) {
+        start_index = _index[heavy_node];
         end_index_ = end_index[heavy_node];
     }
-
-    std::cout << node << " " << value << " " << heavy_node << " " << start_index << " " << end_index_ << std::endl;
+    //std::cout << value << std::endl;
 
     update_segment_tree(start_index, end_index_, 1, node_index, value, 3 * start_index);
+    for (int i = 1; i <= 24; i++) {
+        //std::cout <<  segment_tree[i] << " ";
+    }
+    //std::cout << std::endl;
 }
 
 void build_hld(int n) {
     for (int i = 0; i < n; i++) {
-        update_hld(i, euler_values[i]);
+        update_hld(i, values[i]);
     }
 }
 
 
 int find_lca(int a, int b) {
     for (int i = 18; i >= 0; i--) {
-        if (depth[a] + (1 << i) <= depth[b]) {
+        if (depth[a] >= depth[b] && depth[b] + (1 << i) <= depth[a]) {
             a = lca[a][i];
         }
     }
 
     for (int i = 18; i >= 0; i--) {
-        if (depth[b] + (1 << i) <= depth[a]) {
+        if (depth[b] >= depth[a] && depth[a] + (1 << i) <= depth[b]) {
             b = lca[b][i];
         }
     }
@@ -147,27 +152,36 @@ int find_lca(int a, int b) {
         if (lca[a][i] != lca[b][i]) {
             a = lca[a][i];
             b = lca[b][i];
+        } else {
+            break;
         }
+    }
+    if (a == b) {
+        return a;
     }
     return lca[a][0];
 }
 
 int query_path_hld(int node, int ancestor) {
-    int result = 0;
+    if (node == 15 && ancestor == 0) {
+        bool cc = false;
+    }
+    int result = values[node];
     while (depth[node] > depth[ancestor]) {
         if (heavy_parent[node] == -1) {
             int start_index = _index[node];
-            result = std::max(segment_tree[3 * start_index + 1], result);
+            result = std::max(values[node], result);
             node = lca[node][0];
-        } else if (depth[heavy_parent[node]] <= depth[ancestor]) {
+        } else if (depth[heavy_parent[node]] >= depth[ancestor]) {
             int start_index = _index[heavy_parent[node]];
-            result = std::max(segment_tree[3 * start_index + 1], result);
+            int end_index_ = end_index[heavy_parent[node]];
+            result = std::max(query(start_index, end_index[heavy_parent[node]], 1, start_index, _index[node], 3 * start_index), result);
             node = heavy_parent[node];
         } else {
             int start_index = _index[heavy_parent[node]];
             int end_index_ = end_index[heavy_parent[node]];
             int node_index = _index[node];
-            result = std::max(query(start_index, end_index_, 1, node_index, end_index_, 3 * start_index), result);
+            result = std::max(query(start_index, end_index_, 1, _index[ancestor], node_index, 3 * start_index), result);
             node = heavy_parent[node];
         }
     }
@@ -210,12 +224,10 @@ int main() {
     dfs_subtree(tree, 0, -1);
     dfs_hld(tree, 0, -1, -1, false);
 
-    std::cout << std::endl;
+
     build_hld(n);
 
-    for (int i = 0; i < 4 * n; i++) {
-        //std::cout << i << ": " << segment_tree[i] << std::endl;
-    }
+
     for (int i = 0; i < q; i++) {
         int type;
         std::cin >> type;
@@ -225,6 +237,7 @@ int main() {
             std::cin >> node >> value;
             node--;
             update_hld(node, value);
+            values[node] = value;
         } else {
             int a, b;
             std::cin >> a >> b;
