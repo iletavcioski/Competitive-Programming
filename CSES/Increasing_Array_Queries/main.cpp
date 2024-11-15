@@ -4,18 +4,8 @@
 #include <algorithm>
 
 long long fenwick_tree[200001];
+long long fen_arr[200001];
 int n, q;
-
-struct query {
-    int l, r, index;
-};
-
-bool compare(query a, query b) {
-    if (a.l != b.l) {
-        return a.l < b.l;
-    }
-    return a.r < b.r;
-}
 
 void update(int i, long long val) {
     while (i <= n) {
@@ -40,7 +30,7 @@ int main() {
 
     std::cin >> n >> q;
 
-    std::vector<int> array;
+    std::vector<long long> array;
     array.resize(n + 1);
     std::vector<long long> prefix(n + 1, 0);
     for (int i = 1; i <= n; i++) {
@@ -48,57 +38,61 @@ int main() {
         prefix[i] = prefix[i - 1] + array[i];
     }
 
-    std::vector<query> queries;
+    std::vector<std::vector<std::pair<long long, int> > > queries;
+    std::vector<std::pair<long long, int> > vec;
+    queries.insert(queries.begin(), n + 1, vec);
     std::vector<long long> solution(q + 1, 0);
 
     for (int i = 0; i < q; i++) {
         int left, right;
         std::cin >> left >> right;
-        queries.push_back({left, right, i + 1});
+        queries[left].push_back({right, i + 1});
     }
 
-    std::sort(queries.begin(), queries.end(), compare);
-    std::reverse(queries.begin(), queries.end());
-    std::deque<std::pair<int, int> > deque;
-    deque.push_back({1000000001, n + 1});
+    std::vector<std::pair<long long, int> > maxes;
+    int num_maximums = 0;
 
-    for (query q : queries) {
-        int left = q.l;
-        int right = q.r;
-        if (left == right) {
-            solution[q.index] = 0;
-            continue;
+    for (long long i = n; i >= 1; i--) {
+        while (!maxes.empty() && maxes.back().first <= array[i]) {
+            update(num_maximums, -fen_arr[num_maximums]);
+            fen_arr[num_maximums] = 0;
+            num_maximums--;
+            maxes.pop_back();
         }
-        int current = deque[0].second - 1;
-        while (current >= left) {
-            while (array[current] > deque[0].first) {
-                int up_value = -deque[0].first * (deque[1].second - deque[0].second - 1);
-                update(deque[0].second, up_value);
-                deque.pop_front();
+        long long last_pos = n + 1;
+        if (!maxes.empty()) {
+            last_pos = maxes.back().second;
+        }
+
+        num_maximums++;
+
+        maxes.push_back({array[i], i});
+        update(num_maximums, (long long)(array[i] * (last_pos - i)) - fen_arr[num_maximums]);
+        fen_arr[num_maximums] = (long long)array[i] * (last_pos - i);
+        for (auto &[right, query_index] : queries[i]) {
+            int l = 0;
+            int r = num_maximums - 1;
+            int pos = 0;
+            while (l <= r) {
+                int mid = (l + r) / 2;
+                if (maxes[mid].second <= right) {
+                    pos = mid;
+                    r = mid - 1;
+                } else {
+                    l = mid + 1;
+                }
             }
-            deque.push_front({array[current], current});
-            int up_value = deque[0].first * (deque[1].second - deque[0].second - 1);
-            update(deque[0].second, up_value);
-            current--;
-        }
 
-        int l = 0, r = deque.size() - 1;
-        int pos = l;
-        while (l <= r) {
-            int mid = (l + r) / 2;
-            if (deque[mid].second <= right) {
-                pos = std::max(pos, mid);
-                l = mid + 1;
-            } else {
-                r = mid - 1;
+            if (i == right) {
+                bool cc = true;
             }
-        }
 
-        long long sum_maxi = query_(deque[pos].second - 1) - query_(deque[0].second - 1);
-        long long sum_prefix = prefix[deque[pos].second - 1] - prefix[deque[0].second];
-        long long additional_part_maxi = ((right - deque[pos].second) * deque[pos].first);
-        long long additional_part_prefix = (prefix[right] - prefix[deque[pos].second]);
-        solution[q.index] = sum_maxi - sum_prefix + additional_part_maxi - additional_part_prefix;
+            long long sum1 = query_(num_maximums) - query_(pos + 1);
+            long long sum2 = (long long)(right + 1 - std::max((long long)maxes[pos].second, i)) * maxes[pos].first;
+            long long prefixSum = prefix[right] - prefix[i - 1];
+            solution[query_index] = sum1 + sum2 - prefixSum;
+
+        }
     }
 
     for (int i = 1; i <= q; i++) {
