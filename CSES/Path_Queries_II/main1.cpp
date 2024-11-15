@@ -95,6 +95,7 @@ void dfs_hld(std::vector<std::vector<int> > &tree, int current_node, int previou
         }
         return;
     }
+    
     if (heavy_path) {
         dfs_hld(tree, max_subtree[current_node], current_node, heavy_node, true);
     } else {
@@ -119,13 +120,9 @@ void update_hld(int node, int value) {
         start_index = _index[heavy_node];
         end_index_ = end_index[heavy_node];
     }
-    //std::cout << value << std::endl;
  
     update_segment_tree(start_index, end_index_, 1, node_index, value, 3 * start_index);
-    for (int i = 1; i <= 24; i++) {
-        //std::cout <<  segment_tree[i] << " ";
-    }
-    //std::cout << std::endl;
+
 }
  
 void build_hld(int n) {
@@ -136,18 +133,16 @@ void build_hld(int n) {
  
  
 int find_lca(int a, int b) {
+    if (depth[a] < depth[b]) {
+        std::swap(a, b);
+    }
     for (int i = 18; i >= 0; i--) {
-        if (depth[a] >= depth[b] && depth[b] + (1 << i) <= depth[a]) {
+        if (depth[a] - (1 << i) >= depth[b]) {
             a = lca[a][i];
         }
     }
- 
-    for (int i = 18; i >= 0; i--) {
-        if (depth[b] >= depth[a] && depth[a] + (1 << i) <= depth[b]) {
-            b = lca[b][i];
-        }
-    }
- 
+
+
     for (int i = 18; i >= 0; i--) {
         if (lca[a][i] != lca[b][i]) {
             a = lca[a][i];
@@ -164,13 +159,13 @@ int query_path_hld(int node, int ancestor) {
     if (node == 15 && ancestor == 0) {
         bool cc = false;
     }
-    int result = values[node];
+    int result = std::max(values[node], values[ancestor]);
     while (depth[node] > depth[ancestor]) {
         if (heavy_parent[node] == -1) {
             int start_index = _index[node];
             result = std::max(values[node], result);
             node = lca[node][0];
-        } else if (depth[heavy_parent[node]] >= depth[ancestor]) {
+        } else if (depth[heavy_parent[node]] > depth[ancestor]) {
             int start_index = _index[heavy_parent[node]];
             int end_index_ = end_index[heavy_parent[node]];
             result = std::max(query(start_index, end_index[heavy_parent[node]], 1, start_index, _index[node], 3 * start_index), result);
@@ -180,6 +175,7 @@ int query_path_hld(int node, int ancestor) {
             int end_index_ = end_index[heavy_parent[node]];
             int node_index = _index[node];
             result = std::max(query(start_index, end_index_, 1, _index[ancestor], node_index, 3 * start_index), result);
+            break;
             node = heavy_parent[node];
         }
     }
