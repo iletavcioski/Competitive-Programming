@@ -11,7 +11,7 @@ int main() {
     std::cin >> n >> m;
 
     long long mat[505][505];
-
+    std::vector<int> graph[505];
     for (int i = 1; i <= n; i++) {
         for (int j = 1; j <= n; j++) {
             mat[i][j] = 0;
@@ -23,7 +23,8 @@ int main() {
         long long c;
         std::cin >> a >> b;
         std::cin >> c;
-
+        graph[a].push_back(b);
+        graph[b].push_back(a);
         mat[a][b] += c;
     }
 
@@ -35,31 +36,26 @@ int main() {
     while(there_is_path) {
         std::queue<int> qi;
         qi.push(1);
-        std::queue<long long> qs;
-        qs.push(0);
 
-        std::vector<long long> distances(n + 1, 1e18);
+
+
         std::vector<int> parent(n + 1, -1);
         std::vector<bool> vis(n + 1, false);
         vis[1] = true;
-        distances[1] = 0;
+
         while (!qi.empty()) {
             int topi = qi.front();
             qi.pop();
-            int tops = qs.front();
-            qs.pop();
             // std::cout << topi << " " << tops << "\n";
-            for (int i = 1; i <= n; i++) {
-                if (mat[topi][i] != 0 and !vis[i]) {
-                    distances[i] = tops + mat[topi][i];
-                    qs.push(tops + mat[topi][i]);
+            for (int i : graph[topi]) {
+                if (mat[topi][i] > 0 and !vis[i]) {
                     qi.push(i);
                     parent[i] = topi;
                     vis[i] = true;
                 }
             }
         }
-        if (distances[n] == 1e18) {
+        if (!vis[n]) {
             break;
         }
 
