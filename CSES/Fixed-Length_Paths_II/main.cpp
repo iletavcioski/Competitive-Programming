@@ -5,23 +5,10 @@ const int N = 200002;
 int cnt[200001];
 int n, q;
 int k1, k2;
+
+
+
 int max_depth;
-void update(int i, int val) {
-    while (i <= (k2 + 1)) {
-        cnt[i] += val;
-        i += (i & (-i));
-    }
-}
-
-int query_(int i) {
-    int res = 0;
-    while (i >= 1) {
-        res += cnt[i];
-        i -= (i & (-i));
-    }
-    return res;
-}
-
 int subtree_size[N];
 std::vector<int> tree[N];
 bool visited_centroid[N];
@@ -43,9 +30,10 @@ void dfs(int current_node, int previous_node, int depth, bool calculate) {
     if (depth > k2) {
         return;
     }
-    
-    partial[depth + 1]++;
+    if (!calculate)
+        partial[depth]++;
     max_depth = std::max(max_depth, depth);
+
     for (int next_node : tree[current_node]) {
         if (next_node == previous_node || visited_centroid[next_node]) {
             continue;
@@ -71,29 +59,33 @@ void solution(int node) {
     int centroid = find_centroid(node, -1, ((all_nodes + 1) / 2));
 
     visited_centroid[centroid] = true;
-    update(1, 1);
+    cnt[0] = 0;
     max_depth = 0;
     for (int next_node : tree[centroid]) {
         if (!visited_centroid[next_node]) {
-            
-            for (int i = 2; i <= max_depth + 1; i++) {
-                result += (long long)(partial[i] * (query_(k2 - i + 1) - query_(k1 - i)));
-            }
-            std::fill(partial, partial + max_depth + 2, 0);
             dfs(next_node, centroid, 1, false);
-            
-            for (int i = 2; i <= max_depth + 1; i++) {
-                update(i, partial[i]);
+
+            for (int i = 1; i <= max_depth; i++) {
+
+                result += (long long)(partial[i] * (cnt[k2 - i + 1] - cnt[k1 - i]));
             }
-            
-            
+
+            int all = 0;
+            for (int i = 1; i <= max_depth; i++) {
+                if (i <= max_depth) {
+                    all += partial[i];
+                }
+                cnt[i + 1] += all;
+            }
+
+            std::fill(partial, partial + max_depth + 2, 0);
+
         }
-        
+
     }
-    std::fill(partial, partial + max_depth + 2, 0);
     //std::cout << "CENTROID: " << centroid << " SOLUTION: " << result << std::endl;
 
-    std::fill(cnt, cnt + k2 + 2, 0);
+    std::fill(cnt, cnt + k2 + 2, 1LL);
     for (int next_node : tree[centroid]) {
         if (!visited_centroid[next_node]) {
             solution(next_node);
@@ -117,6 +109,7 @@ int main() {
         tree[a].push_back(b);
         tree[b].push_back(a);
     }
+    std::fill(cnt, cnt + k2 + 2, 1LL);
     solution(0);
     std::cout << result << std::endl;
     return 0;
