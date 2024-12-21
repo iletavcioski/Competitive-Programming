@@ -20,43 +20,95 @@ void dfs(int x, int y, char a) {
         plostina++;
         if (x - 1 < 0 || mapa[y][x - 1] != a) {
             bool add = true;
-            per[y + 1][x - 1 + 1][0] = cnt;
-            if (y + 1 < n && per[y + 1 + 1][x - 1 + 1][0] == cnt)
+            int yy = y;
+            if (per[y + 1][x - 1 + 1][0] == cnt) {
                 add = false;
-            if (y - 1 >= 0 && per[y - 1 + 1][x - 1 + 1][0] == cnt)
-                add = false;
-            if (add) 
+            } else {
+                yy = y;
+                while (yy < n && mapa[yy][x] == a && (x - 1 < 0 || mapa[yy][x - 1] != a)) {
+                    per[yy + 1][x - 1 + 1][0] = cnt;
+                    yy++;
+                }
+                yy = y;
+                while (yy >= 0 && mapa[yy][x] == a && (x - 1 < 0 || mapa[yy][x - 1] != a)) {
+                    per[yy + 1][x - 1 + 1][0] = cnt;
+                    yy--;
+                }
+            }
+            
+            if (add) {
+                std::cout << y << " " << x << " " << 0 << std::endl;
                 perimeter++;
+            }
         }
         if (x + 1 == m || mapa[y][x + 1] != a) {
             bool add = true;
-            per[y + 1][x + 1 + 1][1] = cnt;
-            if (y + 1 < n && per[y + 1 + 1][x + 1 + 1][1] == cnt)
+            int yy = y;
+            if (per[y + 1][x + 1 + 1][1] == cnt) {
                 add = false;
-            if (y - 1 >= 0 && per[y - 1 + 1][x + 1 + 1][1] == cnt)
-                add = false;
-            if (add) 
+            } else {
+                yy = y;
+                while (yy < n && mapa[yy][x] == a && (x + 1 == m || mapa[yy][x + 1] != a)) {
+                    per[yy + 1][x + 1 + 1][1] = cnt;
+                    yy++;
+                }
+                yy = y;
+                while (yy >= 0 && mapa[yy][x] == a && (x + 1 == m || mapa[yy][x + 1] != a)) {
+                    per[yy + 1][x + 1 + 1][1] = cnt;
+                    yy--;
+                }
+            }
+            
+            if (add) {
+                std::cout << y << " " << x << " " << 1 << std::endl;
                 perimeter++;
+            }
         }
         if (y - 1 < 0 || mapa[y - 1][x] != a) {
             bool add = true;
-            per[y - 1 + 1][x + 1][2] = cnt;
-            if (x + 1 < m && per[y - 1 + 1][x + 1 + 1][2] == cnt)
+            int yy = y;
+            if (per[y - 1 + 1][x + 1][2] == cnt) {
                 add = false;
-            if (x - 1 >= 0 && per[y - 1 + 1][x - 1 + 1][2] == cnt)
-                add = false;
-            if (add) 
+            } else {
+                int xx = x;
+                while (xx < m && mapa[y][xx] == a && (y - 1 < 0 || mapa[y - 1][xx] != a)) {
+                    per[y - 1 + 1][xx + 1][2] = cnt;
+                    xx++;
+                }
+                xx = x;
+                while (xx >= 0 && mapa[y][xx] == a && (y - 1 < 0 || mapa[y - 1][xx] != a)) {
+                    per[y - 1 + 1][xx + 1][2] = cnt;
+                    xx--;
+                }
+            }
+            
+            if (add) {
+                std::cout << y << " " << x << " " << 2 << std::endl;
                 perimeter++;
+            }
         }
         if (y + 1 == n || mapa[y + 1][x] != a) {
             bool add = true;
-            per[y + 1 + 1][x + 1][3] = cnt;
-            if (x + 1 < m && per[y + 1 + 1][x + 1 + 1][3] == cnt)
+            int yy = y;
+            if (per[y + 1 + 1][x + 1][3] == cnt) {
                 add = false;
-            if (x - 1 >= 0 && per[y + 1 + 1][x - 1 + 1][3] == cnt)
-                add = false;
-            if (add) 
+            } else {
+                int xx = x;
+                while (xx < m && mapa[y][xx] == a && (y + 1 == n || mapa[y + 1][xx] != a)) {
+                    per[y + 1 + 1][xx + 1][3] = cnt;
+                    xx++;
+                }
+                xx=x;
+                while (xx >= 0 && mapa[y][xx] == a && (y + 1 == n || mapa[y + 1][xx] != a)) {
+                    per[y + 1 + 1][xx + 1][3] = cnt;
+                    xx--;
+                }
+            }
+
+            if (add) {
+                std::cout << y << " " << x << " " << 3 << std::endl;
                 perimeter++;
+            }
         }
        
     } else {
@@ -98,6 +150,7 @@ int main() {
                 perimeter = 0;
                 plostina = 0;
                 dfs(j, i, mapa[i][j]);
+                std::cout << perimeter << " " << plostina << std::endl;
                 res += (long long)((long long)perimeter * (long long)plostina);
             }
         }
